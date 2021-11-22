@@ -47,22 +47,7 @@ var loop = function() {
         ball.position.y += ball.velocity.y*frameRate*100;
     }
     // Handle collisions
-    if (ball.position.y > height - ball.radius) {
-        ball.velocity.y *= ball.restitution;
-        ball.position.y = height - ball.radius;
-    }
-    if (ball.position.x > width - ball.radius) {
-        ball.velocity.x *= ball.restitution;
-        ball.position.x = width - ball.radius;
-    }
-    if (ball.position.x < ball.radius) {
-        ball.velocity.x *= ball.restitution;
-        ball.position.x = ball.radius;
-    }
-    if (ball.position.y < ball.radius) {
-        ball.velocity.y *= ball.restitution;
-        ball.position.y = ball.radius;
-    }
+      bounceOffWalls()
     // Draw the ball
 
 
