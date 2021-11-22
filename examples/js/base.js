@@ -211,4 +211,14 @@ var setup = function() {
     ctx.fillStyle = 'red';
     ctx.strokeStyle = '#000000';
     loopTimer = setInterval(loop, frameDelay);
+    lineTimer = setInterval(addLine,500)
+}
+var drawLines = function(lines) {
+  for (let k = 0; k < lines.length; k++) {
+    ctx.beginPath();
+    ctx.moveTo(lines[k], 0);
+    ctx.lineTo(lines[k], height);
+    ctx.stroke();
+    ctx.closePath();
+  }
 }
