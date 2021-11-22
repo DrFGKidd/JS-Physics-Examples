@@ -12,8 +12,8 @@
  * lead ball: mass 10, restitution -0.05
  */
 var ball = {
-    position: {x: 150, y: 50},
-    velocity: {x: 0, y: 0},
+    position: {x: width/2, y: 100},
+    velocity: {x: 2, y: 0},
     mass: 0.1, //kg
     radius: 5, // 1px = 1cm
     restitution: -0.7,
