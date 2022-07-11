@@ -12,6 +12,7 @@ Example.catapult = function() {
         Collision = Matter.Collision,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
+        Query = Matter.Query,
         Vector = Matter.Vector,
         Events = Matter.Events;
 
@@ -71,15 +72,19 @@ Example.catapult = function() {
       return catapult
     };
     var catapult = create_catapult(initial_width,initial_center,initial_offset);
-
+    var baseSlider = Bodies.rectangle(50,50,100,20,{
+      isStatic:true,
+      label: "slider",
+      collisionFilter: {group:-1}
+    })
     create_ball = function(position) {
       Composite.remove(world,ball)
-      ball = Bodies.circle(position.x,position.y,20,{density:.0001})
+      ball = Bodies.circle(position.x,position.y,20,{density:.0001,collisionFilter: {group:-1}})
       Composite.add(world,ball)
     }
     create_big_ball = function(position) {
       Composite.remove(world,big_ball)
-      big_ball = Bodies.circle(position.x,position.y,50,{density:.1})
+      big_ball = Bodies.circle(position.x,position.y,50,{density:.1,collisionFilter: {group:-1}})
       Composite.add(world,big_ball)
     }
     //var catapult = Bodies.rectangle(400, 520, 320, 20, { collisionFilter: { group: group } });
@@ -121,6 +126,7 @@ Example.catapult = function() {
         ball,
         big_ball,
         ground,
+        baseSlider,
 
       //  Bodies.rectangle(400, 535, 20, 80, { isStatic: true, collisionFilter: { group: group }, render: { fillStyle: '#060a19' } }),
       //  Bodies.circle(560, 100, 50, { density: 0.005 }),
@@ -150,10 +156,15 @@ Example.catapult = function() {
     Events.on(mouseConstraint, 'mousedown', function(event) {
         let mouse = event.mouse;
         let position = mouse.mousedownPosition
-        if (keys[32]) {
-          create_big_ball(position)
+        slider = Query.point([baseSlider],position)[0] || false;
+        if (!slider) {
+          if (keys[32]) {
+            create_big_ball(position)
+          } else {
+            create_ball(position)
+          }
         } else {
-          create_ball(position)
+          Body.translate(slider,{x:mouse.position.x-slider.position.x,y:0})
         }
     });
     var score = document.getElementById("myScore");
