@@ -23,12 +23,12 @@ var Cd = 0.47;  // Dimensionless
 var rho = 1.225; // kg / m^3
 var A = Math.PI * ball.radius * ball.radius / (10000); // m^2
 var ag = 9.81;  // m / s^2
-var k_spr = 10;
+var k_spr = 1;
 
 var lines = []
 var addLine = function() {
   lines.push(ball.position.x)
-  if (lines.length>8) {lines.shift()}
+  if (lines.length>5) {lines.shift()}
 }
 var loop = function() {
     if ( ! mouse.isDown) {
