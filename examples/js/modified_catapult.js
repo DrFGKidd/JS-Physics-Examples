@@ -45,7 +45,8 @@
       }
       if (this.center === undefined) {this.initialize("center",this.width/2)};
       if (this.offset === undefined) {this.initialize("offset",0)};
-      this.body = this.build()
+      this.updated = false
+      this.build()
     };
     initialize(key,value) {
       let temp = value
@@ -76,20 +77,52 @@
         })
       let catapult = Composite.create()
       Composite.add(catapult,[arm,hinge,spring])//,spring])
-      return catapult
+      this.body = catapult
+      this.updated = true
+    }
+  };
+  class Slider {
+    constructor(key,object,yPos,options) {
+      this.key = key;
+      this.object = object;
+      this.oldPos = 50;
+      this.body = Bodies.rectangle(50,yPos,100,20,{
+        isStatic:true,
+        label: "slider",
+        collisionFilter: {group:-1}
+      })
+      if (Object.keys(options).length>0) {
+        for (const key in options) {
+          this.initialize(key,options[key])
+        }
+      }
+      if (this.offset === undefined) {this.initialize("offset",0)};
+      if (this.scale === undefined) {this.initialize("scale",1)};
+    };
+    initialize(key,value) {
+      let temp = value
+      Object.defineProperty(this, key,{
+        get() {return temp;},
+        set(newValue) {this[key] = newValue;},
+        enumerable: true,
+        configurable: true,
+      })
+    };
+    update() {
+      let sliderDelta = this.body.position.x - this.oldPos
+      this.oldPos = this.body.position.x
+      this.object[this.key]+=(sliderDelta)*this.scale+this.offset
+      this.object.build()
     }
   }
   // add bodies
+  var bodies = [];
   var initial_position = {x:400,y:520};
   var ball = Bodies.circle(999,999,5)
   var big_ball = Bodies.circle(999,999,5)
 
-  const cat = new Catapult(initial_position,{height:20,width:320,offset:0,center:0})
-  var baseSlider = Bodies.rectangle(50,50,100,20,{
-    isStatic:true,
-    label: "slider",
-    collisionFilter: {group:-1}
-  })
+  const catapult = new Catapult(initial_position,{height:20,width:320,offset:0,center:0})
+
   create_ball = function(position) {
     Composite.remove(world,ball)
     ball = Bodies.circle(position.x,position.y,20,{density:.0001,collisionFilter: {group:-1}})
@@ -105,7 +138,7 @@
 
   var ground = Bodies.rectangle(400, 600, 800, 50.5, { isStatic: true, render: { fillStyle: '#060a19' } });
   Composite.add(world, [
-      cat.body,
+      catapult.body,
       ball,
       big_ball,
       ground,
