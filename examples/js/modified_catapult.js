@@ -179,6 +179,48 @@ Example.catapult = function() {
       }
 
     });
+    class Catapult {
+      constructor(position,options) {
+        this._position = position
+        if (keys(options).length>0) {
+          for (const key in options) {
+            initialize(key,options[key])
+          }
+        }
+        if (this.hingeLocation === undefined) {this.hingeLocation = this.width/2};
+        if (this.offset === undefined) {this.offset = 0};
+      };
+      initialize(key,value) {
+        Object.defineProperty(this, key,{
+          get() {return this(key);},
+          set(newValue) {this(key) = newValue;},
+          enumerable: true,
+          configurable: true,
+        })
+      };
+      build() {
+        let plank = Bodies.rectangle(this._position.x-this.width/2,this._position.y+this.offset,this.width,this.height)
+        let cup = Bodies.rectangle(this._position.x-this.width+this.height/2,this._position.y+this.offset-20,this.height,30)
+        let arm = Body.create({parts:[plank,cup]})
+        let hinge = Constraint.create({
+              bodyA: arm,
+              pointA: {x:this.center,y:0},
+              pointB: {x:this._position.x,y:this._position.y+this.offset},
+              stiffness: 1,
+              length:0
+            });
+        let spring = Constraint.create({
+              bodyA: arm,
+              pointA:{x:this.width/2-10,y:0},
+              pointB:{x:this._position.x+this.width/2-this.height,y:this._position.y+60},
+              stiffness: 0.01,
+              length:60-this.offset
+          })
+        let catapult = Composite.create()
+        Composite.add(catapult,[arm,hinge,spring])//,spring])
+        return catapult
+      }
+    }
     // keep the mouse in sync with rendering
     render.mouse = mouse;
 
