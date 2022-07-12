@@ -152,7 +152,13 @@ Example.catapult = function() {
     document.body.addEventListener("keyup", function(e) {
       keys[e.keyCode] = false;
     });
-
+    Events.on(engine, 'beforeUpdate', function(event) {
+      if (draggingSlider == true) {
+        slider = baseSlider;
+        Body.translate(slider,{x:mouse.position.x-slider.position.x,y:0})
+      }
+    });
+    var draggingSlider = false;
     Events.on(mouseConstraint, 'mousedown', function(event) {
         let mouse = event.mouse;
         let position = mouse.mousedownPosition
@@ -164,9 +170,10 @@ Example.catapult = function() {
             create_ball(position)
           }
         } else {
-          Body.translate(slider,{x:mouse.position.x-slider.position.x,y:0})
+          draggingSlider = true
         }
     });
+    Events.on(mouseConstraint, 'mouseup', function() {draggingSlider = false});
     var score = document.getElementById("myScore");
     collided = true
     Events.on(engine, 'afterUpdate', function(event) {
