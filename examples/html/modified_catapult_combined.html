@@ -60,6 +60,7 @@
       create_catapult = function(width, offset, center) {
         let plank = Bodies.rectangle(initial_position.x - width / 2 - center, initial_position.y + offset, width, 10)
         let cup = Bodies.rectangle(initial_position.x - width + 5 - center, initial_position.y + offset - 20, 10, 30)
+        console.log(plank)
         let arm = Body.create({
           parts: [plank, cup]
         })
