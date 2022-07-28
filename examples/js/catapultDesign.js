@@ -1,3 +1,5 @@
+
+
 var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
@@ -212,6 +214,7 @@ class Slider {
   constructor(key,object,position,options) {
     this.key = key;
     this.object = object;
+    this.currently_clicked = false;
     if (Object.keys(options).length>0) {
       for (const key in options) {
         this.initialize(key,options[key])
@@ -238,10 +241,15 @@ class Slider {
     })
   };
   being_clicked() {
-    if (!clicking) {return false}
+    if (!clicking) {
+      this.currently_clicked = false
+      return false
+    }
+    if (this.currently_clicked) {return true}
     let maxBounds = this.body.bounds.max
     let minBounds = this.body.bounds.min
     if ((mouseX>minBounds.x && mouseX<maxBounds.x) && (mouseY>minBounds.y && mouseY<maxBounds.y)) {
+      this.currently_clicked = true
       return true
     }
     return false
@@ -271,6 +279,7 @@ class Letter {
     if(options.isStatic) {Body.setStatic(this.body,true)}
     Composite.add(world,this.body)
     this.draw = true
+    this.bottom = this.body.bounds.max.y
   }
   show() {
     if (this.draw) {
@@ -297,8 +306,15 @@ class Word {
   constructor(x,y,letters,options) {
     this.letters = []
     let addX = 0
+    let bot = 0
     for (var i = 0;i<letters.length;i++) {
+
       let newLetter = new Letter(x+addX,y,letters[i],options)
+      if (i==0) {bot = newLetter.bottom } else {
+        let ypos = newLetter.body.position.y
+        let delta = newLetter.bottom-bot
+        Body.setPosition(newLetter.body,{x:x+addX,y:ypos-delta})
+      }
       this.letters.push(newLetter)
       addX += Math.max(60,newLetter.body.bounds.max.x-newLetter.body.bounds.min.x)
     }
@@ -315,7 +331,7 @@ class Word {
   }
 }
 function setup() {
-  createCanvas(800,600)
+  createCanvas(1300,600)
   listOfColors = [color('#A908B5'), color('#FF8000'), color('#00FFFF'), color('#FFFF00'), color('#FF00FF'), color('#FFFFFF'), color('#66ff00')];
   engine = Engine.create();
   world = engine.world;
@@ -383,7 +399,10 @@ function updateScore(object) {
 function keyPressed() {
   if (keyCode === 32) {
     try{bigBall.remove()} catch {pass =""}
-    bigBall = new Ball(mouseX,mouseY,50,{density:.1})
+    let filters = [-1, -1, -1, -1, -1, 1, 1, 1, 1, 1]
+    let cFilter = filters[Math.floor(Math.random()*10)]
+    console.log(cFilter)
+    bigBall = new Ball(mouseX,mouseY,50,{density:.1, collisionFilter: {group:cFilter}})
     boxes.push(bigBall)
   }
   if (keyCode === 66) {
